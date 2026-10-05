@@ -1,6 +1,6 @@
 
 name: Deploy Flutter Web
-//dependencies
+
 on:
   push:
     branches:
