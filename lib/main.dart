@@ -27,17 +27,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF2F2F0),
+
         colorScheme: const ColorScheme.light(
           primary: Color(0xFF111111),
           secondary: Color(0xFFC62828),
           surface: Colors.white,
           error: Color(0xFFD32F2F),
         ),
+
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF111111),
           foregroundColor: Colors.white,
           elevation: 0,
         ),
+
         cardTheme: CardThemeData(
           color: const Color(0xFF2A2A2A),
           elevation: 3,
@@ -45,6 +48,7 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFC62828),
@@ -58,11 +62,13 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
+
         floatingActionButtonTheme:
             const FloatingActionButtonThemeData(
           backgroundColor: Color(0xFFC62828),
           foregroundColor: Colors.white,
         ),
+
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: const Color(0xFFF2F2F0),
@@ -214,7 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       onTap: () async {
-                        final pickedDate = await showDatePicker(
+                        final pickedDate =
+                            await showDatePicker(
                           context: context,
                           initialDate: selectedDate,
                           firstDate: DateTime(2020),
@@ -254,7 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
-
                       return;
                     }
 
@@ -263,8 +269,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: titleController.text.trim(),
                         description:
                             descriptionController.text.trim(),
-                        subject: subjectController.text.trim(),
-                        score: scoreController.text.trim(),
+                        subject:
+                            subjectController.text.trim(),
+                        score:
+                            scoreController.text.trim(),
                         studentName:
                             studentController.text.trim(),
                         professor:
@@ -295,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> editTask(int index) async {
-    Task task = boxTasks.getAt(index)!;
+    final task = boxTasks.getAt(index)!;
 
     final titleController =
         TextEditingController(text: task.title);
@@ -423,7 +431,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       onTap: () async {
-                        final pickedDate = await showDatePicker(
+                        final pickedDate =
+                            await showDatePicker(
                           context: context,
                           initialDate: selectedDate,
                           firstDate: DateTime(2020),
@@ -463,7 +472,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
-
                       return;
                     }
 
@@ -473,8 +481,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: titleController.text.trim(),
                         description:
                             descriptionController.text.trim(),
-                        subject: subjectController.text.trim(),
-                        score: scoreController.text.trim(),
+                        subject:
+                            subjectController.text.trim(),
+                        score:
+                            scoreController.text.trim(),
                         studentName:
                             studentController.text.trim(),
                         professor:
@@ -533,7 +543,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 const Text(
                   'TASK Group 12',
@@ -585,9 +596,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Container(
-            padding: const EdgeInsets.all(5),
             width: 75,
             height: 75,
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(12),
@@ -628,7 +639,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 letterSpacing: 1.5,
               ),
             ),
+
             SizedBox(width: 8),
+
             Text(
               'Group 12',
               style: TextStyle(
@@ -639,6 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 18),
@@ -658,11 +672,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
       body: ValueListenableBuilder(
         valueListenable: boxTasks.listenable(),
-        builder: (context, Box<Task> box, widget) {
+
+        builder: (
+          context,
+          Box<Task> box,
+          widget,
+        ) {
           if (box.isEmpty) {
             return Column(
               children: [
                 buildHeroSection(0),
+
                 const Expanded(
                   child: EmptyTaskView(),
                 ),
@@ -682,8 +702,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   20,
                   12,
                 ),
+
                 child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
                   children: [
                     Text(
                       'MY TASKS',
@@ -705,7 +728,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             thickness: 3,
                           ),
                         ),
+
                         SizedBox(width: 10),
+
                         Text(
                           'Group 12',
                           style: TextStyle(
@@ -727,23 +752,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     16,
                     90,
                   ),
+
                   itemCount: box.length,
+
                   itemBuilder: (context, index) {
-                    Task task = box.getAt(index)!;
+                    final task = box.getAt(index)!;
 
                     return Dismissible(
                       key: ValueKey(index),
 
-                      direction: DismissDirection.endToStart,
+                      direction:
+                          DismissDirection.endToStart,
 
                       background: Container(
                         margin: const EdgeInsets.only(
                           bottom: 14,
                         ),
-                        padding: const EdgeInsets.only(
+                        padding:
+                            const EdgeInsets.only(
                           right: 20,
                         ),
-                        alignment: Alignment.centerRight,
+                        alignment:
+                            Alignment.centerRight,
                         decoration: BoxDecoration(
                           color: const Color(0xFFC62828),
                           borderRadius:
@@ -774,6 +804,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         margin: const EdgeInsets.only(
                           bottom: 14,
                         ),
+
                         decoration: BoxDecoration(
                           color: const Color(0xFF2A2A2A),
                           borderRadius:
@@ -786,13 +817,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
+
                         child: IntrinsicHeight(
                           child: Row(
                             children: [
                               Container(
                                 width: 6,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFC62828),
+                                decoration:
+                                    const BoxDecoration(
+                                  color:
+                                      Color(0xFFC62828),
                                   borderRadius:
                                       BorderRadius.only(
                                     topLeft:
@@ -813,8 +847,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
 
                                   leading: Container(
-                                    width: 48,
-                                    height: 48,
+                                    width: 62,
+                                    height: 62,
+
                                     decoration:
                                         BoxDecoration(
                                       color: const Color(
@@ -823,6 +858,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           BorderRadius
                                               .circular(8),
                                     ),
+
                                     child: const Center(
                                       child: Text(
                                         'Group 12',
@@ -831,16 +867,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                               Color(0xFFF5C542),
                                           fontWeight:
                                               FontWeight.bold,
-                                          fontSize: 15,
+                                          fontSize: 14,
                                         ),
+                                        textAlign:
+                                            TextAlign.center,
                                       ),
                                     ),
                                   ),
 
                                   title: Text(
                                     task.title,
-                                    style:
-                                        const TextStyle(
+                                    maxLines: 1,
+                                    overflow:
+                                        TextOverflow.ellipsis,
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 17,
                                       fontWeight:
@@ -851,49 +891,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                   subtitle: Padding(
                                     padding:
                                         const EdgeInsets.only(
-                                      top: 7,
+                                      top: 6,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+
+                                    child: Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons
-                                                  .calendar_today,
-                                              size: 13,
-                                              color: Color(
-                                                  0xFFF5C542),
-                                            ),
-                                            const SizedBox(
-                                                width: 6),
-                                            Text(
-                                              formatDate(
-                                                  task.date),
-                                              style:
-                                                  const TextStyle(
-                                                color: Color(
-                                                    0xFFBDBDBD),
-                                              ),
-                                            ),
-                                          ],
+                                        const Icon(
+                                          Icons.calendar_today,
+                                          size: 13,
+                                          color: Color(
+                                              0xFFF5C542),
                                         ),
 
-                                        if (task.subject
-                                            .isNotEmpty) ...[
-                                          const SizedBox(
-                                              height: 4),
-                                          Text(
-                                            task.subject,
-                                            style:
-                                                const TextStyle(
-                                              color: Color(
-                                                  0xFFBDBDBD),
-                                              ),
+                                        const SizedBox(
+                                          width: 6,
+                                        ),
+
+                                        Text(
+                                          formatDate(
+                                            task.date,
                                           ),
-                                        ],
+                                          style:
+                                              const TextStyle(
+                                            color: Color(
+                                                0xFFBDBDBD),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -901,12 +924,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   trailing: Row(
                                     mainAxisSize:
                                         MainAxisSize.min,
+
                                     children: [
                                       IconButton(
                                         onPressed: () {
                                           editTask(index);
                                         },
-                                        icon: const Icon(
+                                        icon:
+                                            const Icon(
                                           Icons.edit,
                                           color:
                                               Color(0xFFF5C542),
@@ -914,16 +939,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
 
-                                      Container(
-                                        width: 32,
-                                        alignment:
-                                            Alignment.center,
-                                        child: const Icon(
-                                          Icons.arrow_back,
-                                          color:
-                                              Color(0xFFE53935),
-                                          size: 27,
-                                        ),
+                                      const Icon(
+                                        Icons.arrow_back,
+                                        color:
+                                            Color(0xFFE53935),
+                                        size: 27,
                                       ),
                                     ],
                                   ),
@@ -964,7 +984,9 @@ class EmptyTaskView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment:
+            MainAxisAlignment.center,
+
         children: [
           Icon(
             Icons.assignment_outlined,
