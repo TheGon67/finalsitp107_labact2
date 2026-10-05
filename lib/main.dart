@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'task.dart';
+import 'boxes.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-  await Hive.openBox('taskBox');
+
+  Hive.registerAdapter(TaskAdapter());
+
+  boxTasks = await Hive.openBox<Task>('taskBox');
 
   runApp(const MyApp());
 }
@@ -21,20 +27,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF2F2F0),
-
         colorScheme: const ColorScheme.light(
           primary: Color(0xFF111111),
           secondary: Color(0xFFC62828),
           surface: Colors.white,
           error: Color(0xFFD32F2F),
         ),
-
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF111111),
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-
         cardTheme: CardThemeData(
           color: const Color(0xFF2A2A2A),
           elevation: 3,
@@ -42,7 +45,6 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFC62828),
@@ -56,13 +58,11 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-
         floatingActionButtonTheme:
             const FloatingActionButtonThemeData(
           backgroundColor: Color(0xFFC62828),
           foregroundColor: Colors.white,
         ),
-
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: const Color(0xFFF2F2F0),
@@ -94,14 +94,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Box taskBox = Hive.box('taskBox');
-
   String formatDate(DateTime date) {
     return '${date.month}/${date.day}/${date.year}';
   }
 
   Future<void> addTask() async {
     final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final subjectController = TextEditingController();
+    final scoreController = TextEditingController();
+    final studentController = TextEditingController();
+    final professorController = TextEditingController();
+
     DateTime selectedDate = DateTime.now();
 
     await showDialog(
@@ -127,51 +131,105 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Task Title',
-                      prefixIcon: Icon(Icons.task_alt),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(
-                      Icons.calendar_month,
-                      color: Color(0xFFC62828),
-                    ),
-                    title: const Text(
-                      'Task Date',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Task Title',
+                        prefixIcon: Icon(Icons.task_alt),
                       ),
                     ),
-                    subtitle: Text(
-                      formatDate(selectedDate),
-                      style: const TextStyle(
-                        color: Color(0xFF707070),
-                      ),
-                    ),
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                      );
 
-                      if (pickedDate != null) {
-                        setDialogState(() {
-                          selectedDate = pickedDate;
-                        });
-                      }
-                    },
-                  ),
-                ],
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        prefixIcon: Icon(Icons.description),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: subjectController,
+                      decoration: const InputDecoration(
+                        labelText: 'Subject',
+                        prefixIcon: Icon(Icons.book),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: scoreController,
+                      decoration: const InputDecoration(
+                        labelText: 'Score',
+                        prefixIcon: Icon(Icons.grade),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: studentController,
+                      decoration: const InputDecoration(
+                        labelText: 'Student Name',
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: professorController,
+                      decoration: const InputDecoration(
+                        labelText: 'Professor',
+                        prefixIcon: Icon(Icons.school),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.calendar_month,
+                        color: Color(0xFFC62828),
+                      ),
+                      title: const Text(
+                        'Task Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        formatDate(selectedDate),
+                        style: const TextStyle(
+                          color: Color(0xFF707070),
+                        ),
+                      ),
+                      onTap: () async {
+                        final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
+
+                        if (pickedDate != null) {
+                          setDialogState(() {
+                            selectedDate = pickedDate;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -196,13 +254,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
+
                       return;
                     }
 
-                    await taskBox.add({
-                      'title': titleController.text.trim(),
-                      'date': selectedDate.toIso8601String(),
-                    });
+                    await boxTasks.add(
+                      Task(
+                        title: titleController.text.trim(),
+                        description:
+                            descriptionController.text.trim(),
+                        subject: subjectController.text.trim(),
+                        score: scoreController.text.trim(),
+                        studentName:
+                            studentController.text.trim(),
+                        professor:
+                            professorController.text.trim(),
+                        date: selectedDate,
+                      ),
+                    );
 
                     if (mounted) {
                       Navigator.pop(context);
@@ -218,16 +287,35 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     titleController.dispose();
+    descriptionController.dispose();
+    subjectController.dispose();
+    scoreController.dispose();
+    studentController.dispose();
+    professorController.dispose();
   }
 
-  Future<void> editTask(dynamic key, Map task) async {
-    final titleController = TextEditingController(
-      text: task['title'].toString(),
-    );
+  Future<void> editTask(int index) async {
+    Task task = boxTasks.getAt(index)!;
 
-    DateTime selectedDate =
-        DateTime.tryParse(task['date'].toString()) ??
-            DateTime.now();
+    final titleController =
+        TextEditingController(text: task.title);
+
+    final descriptionController =
+        TextEditingController(text: task.description);
+
+    final subjectController =
+        TextEditingController(text: task.subject);
+
+    final scoreController =
+        TextEditingController(text: task.score);
+
+    final studentController =
+        TextEditingController(text: task.studentName);
+
+    final professorController =
+        TextEditingController(text: task.professor);
+
+    DateTime selectedDate = task.date;
 
     await showDialog(
       context: context,
@@ -252,51 +340,105 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Task Title',
-                      prefixIcon: Icon(Icons.edit),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(
-                      Icons.calendar_month,
-                      color: Color(0xFFC62828),
-                    ),
-                    title: const Text(
-                      'Task Date',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Task Title',
+                        prefixIcon: Icon(Icons.edit),
                       ),
                     ),
-                    subtitle: Text(
-                      formatDate(selectedDate),
-                      style: const TextStyle(
-                        color: Color(0xFF707070),
-                      ),
-                    ),
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                      );
 
-                      if (pickedDate != null) {
-                        setDialogState(() {
-                          selectedDate = pickedDate;
-                        });
-                      }
-                    },
-                  ),
-                ],
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        prefixIcon: Icon(Icons.description),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: subjectController,
+                      decoration: const InputDecoration(
+                        labelText: 'Subject',
+                        prefixIcon: Icon(Icons.book),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: scoreController,
+                      decoration: const InputDecoration(
+                        labelText: 'Score',
+                        prefixIcon: Icon(Icons.grade),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: studentController,
+                      decoration: const InputDecoration(
+                        labelText: 'Student Name',
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: professorController,
+                      decoration: const InputDecoration(
+                        labelText: 'Professor',
+                        prefixIcon: Icon(Icons.school),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.calendar_month,
+                        color: Color(0xFFC62828),
+                      ),
+                      title: const Text(
+                        'Task Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        formatDate(selectedDate),
+                        style: const TextStyle(
+                          color: Color(0xFF707070),
+                        ),
+                      ),
+                      onTap: () async {
+                        final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
+
+                        if (pickedDate != null) {
+                          setDialogState(() {
+                            selectedDate = pickedDate;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -321,13 +463,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
+
                       return;
                     }
 
-                    await taskBox.put(key, {
-                      'title': titleController.text.trim(),
-                      'date': selectedDate.toIso8601String(),
-                    });
+                    await boxTasks.putAt(
+                      index,
+                      Task(
+                        title: titleController.text.trim(),
+                        description:
+                            descriptionController.text.trim(),
+                        subject: subjectController.text.trim(),
+                        score: scoreController.text.trim(),
+                        studentName:
+                            studentController.text.trim(),
+                        professor:
+                            professorController.text.trim(),
+                        date: selectedDate,
+                      ),
+                    );
 
                     if (mounted) {
                       Navigator.pop(context);
@@ -343,10 +497,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     titleController.dispose();
+    descriptionController.dispose();
+    subjectController.dispose();
+    scoreController.dispose();
+    studentController.dispose();
+    professorController.dispose();
   }
 
-  Future<void> deleteTask(dynamic key) async {
-    await taskBox.delete(key);
+  Future<void> deleteTask(int index) async {
+    await boxTasks.deleteAt(index);
   }
 
   Widget buildHeroSection(int taskCount) {
@@ -385,7 +544,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     letterSpacing: 2,
                   ),
                 ),
+
                 const SizedBox(height: 8),
+
                 const Text(
                   'YOUR TASKS',
                   style: TextStyle(
@@ -395,7 +556,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     letterSpacing: 1,
                   ),
                 ),
+
                 const SizedBox(height: 4),
+
                 Text(
                   '$taskCount',
                   style: const TextStyle(
@@ -405,7 +568,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 1,
                   ),
                 ),
+
                 const SizedBox(height: 4),
+
                 const Text(
                   'TOTAL TASKS',
                   style: TextStyle(
@@ -420,7 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Container(
-            padding: EdgeInsets.all(5),
+            padding: const EdgeInsets.all(5),
             width: 75,
             height: 75,
             decoration: BoxDecoration(
@@ -492,8 +657,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       body: ValueListenableBuilder(
-        valueListenable: taskBox.listenable(),
-        builder: (context, Box box, widget) {
+        valueListenable: boxTasks.listenable(),
+        builder: (context, Box<Task> box, widget) {
           if (box.isEmpty) {
             return Column(
               children: [
@@ -529,7 +694,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: 1,
                       ),
                     ),
+
                     SizedBox(height: 5),
+
                     Row(
                       children: [
                         Expanded(
@@ -562,22 +729,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   itemCount: box.length,
                   itemBuilder: (context, index) {
-                    final key = box.keyAt(index);
-
-                    final task = Map<String, dynamic>.from(
-                      box.get(key),
-                    );
-
-                    final title = task['title'].toString();
-
-                    final date =
-                        DateTime.tryParse(
-                              task['date'].toString(),
-                            ) ??
-                            DateTime.now();
+                    Task task = box.getAt(index)!;
 
                     return Dismissible(
-                      key: ValueKey(key),
+                      key: ValueKey(index),
+
                       direction: DismissDirection.endToStart,
 
                       background: Container(
@@ -590,7 +746,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         alignment: Alignment.centerRight,
                         decoration: BoxDecoration(
                           color: const Color(0xFFC62828),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius:
+                              BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.delete,
@@ -599,12 +756,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
 
                       onDismissed: (direction) {
-                        deleteTask(key);
+                        deleteTask(index);
 
                         ScaffoldMessenger.of(context)
                             .showSnackBar(
                           const SnackBar(
-                            backgroundColor: Color(0xFF111111),
+                            backgroundColor:
+                                Color(0xFF111111),
                             content: Text(
                               'TASK DELETED',
                             ),
@@ -618,7 +776,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF2A2A2A),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius:
+                              BorderRadius.circular(12),
                           boxShadow: const [
                             BoxShadow(
                               color: Colors.black26,
@@ -634,18 +793,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: 6,
                                 decoration: const BoxDecoration(
                                   color: Color(0xFFC62828),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    bottomLeft: Radius.circular(12),
-
-                                       ),
+                                  borderRadius:
+                                      BorderRadius.only(
+                                    topLeft:
+                                        Radius.circular(12),
+                                    bottomLeft:
+                                        Radius.circular(12),
+                                  ),
                                 ),
                               ),
 
                               Expanded(
                                 child: ListTile(
                                   contentPadding:
-                                      const EdgeInsets.symmetric(
+                                      const EdgeInsets
+                                          .symmetric(
                                     horizontal: 12,
                                     vertical: 8,
                                   ),
@@ -653,16 +815,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                   leading: Container(
                                     width: 48,
                                     height: 48,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF111111),
+                                    decoration:
+                                        BoxDecoration(
+                                      color: const Color(
+                                          0xFF111111),
                                       borderRadius:
-                                          BorderRadius.circular(8),
+                                          BorderRadius
+                                              .circular(8),
                                     ),
                                     child: const Center(
                                       child: Text(
                                         'Group 12',
                                         style: TextStyle(
-                                          color: Color(0xFFF5C542),
+                                          color:
+                                              Color(0xFFF5C542),
                                           fontWeight:
                                               FontWeight.bold,
                                           fontSize: 15,
@@ -672,56 +838,90 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
 
                                   title: Text(
-                                    title,
-                                    style: const TextStyle(
+                                    task.title,
+                                    style:
+                                        const TextStyle(
                                       color: Colors.white,
                                       fontSize: 17,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight:
+                                          FontWeight.bold,
                                     ),
                                   ),
 
                                   subtitle: Padding(
-                                    padding: const EdgeInsets.only(
+                                    padding:
+                                        const EdgeInsets.only(
                                       top: 7,
                                     ),
-                                    child: Row(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
                                       children: [
-                                        const Icon(
-                                          Icons.calendar_today,
-                                          size: 13,
-                                          color: Color(0xFFF5C542),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons
+                                                  .calendar_today,
+                                              size: 13,
+                                              color: Color(
+                                                  0xFFF5C542),
+                                            ),
+                                            const SizedBox(
+                                                width: 6),
+                                            Text(
+                                              formatDate(
+                                                  task.date),
+                                              style:
+                                                  const TextStyle(
+                                                color: Color(
+                                                    0xFFBDBDBD),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          formatDate(date),
-                                          style: const TextStyle(
-                                            color:
-                                                Color(0xFFBDBDBD),
+
+                                        if (task.subject
+                                            .isNotEmpty) ...[
+                                          const SizedBox(
+                                              height: 4),
+                                          Text(
+                                            task.subject,
+                                            style:
+                                                const TextStyle(
+                                              color: Color(
+                                                  0xFFBDBDBD),
+                                              ),
                                           ),
-                                        ),
+                                        ],
                                       ],
                                     ),
                                   ),
 
                                   trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisSize:
+                                        MainAxisSize.min,
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          editTask(key, task);
+                                          editTask(index);
                                         },
                                         icon: const Icon(
                                           Icons.edit,
-                                          color: Color(0xFFF5C542),
+                                          color:
+                                              Color(0xFFF5C542),
                                           size: 22,
                                         ),
                                       ),
+
                                       Container(
                                         width: 32,
-                                        alignment: Alignment.center,
+                                        alignment:
+                                            Alignment.center,
                                         child: const Icon(
                                           Icons.arrow_back,
-                                          color: Color(0xFFE53935),
+                                          color:
+                                              Color(0xFFE53935),
                                           size: 27,
                                         ),
                                       ),
@@ -742,7 +942,8 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
 
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton:
+          FloatingActionButton.extended(
         onPressed: addTask,
         icon: const Icon(Icons.add),
         label: const Text(
@@ -770,7 +971,9 @@ class EmptyTaskView extends StatelessWidget {
             size: 70,
             color: Color(0xFF707070),
           ),
+
           SizedBox(height: 15),
+
           Text(
             'NO TASKS',
             style: TextStyle(
@@ -780,7 +983,9 @@ class EmptyTaskView extends StatelessWidget {
               color: Color(0xFF111111),
             ),
           ),
+
           SizedBox(height: 6),
+
           Text(
             'Add a task to get started',
             style: TextStyle(
