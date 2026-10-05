@@ -1,125 +1,794 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  await Hive.openBox('taskBox');
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Task Group 12',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFF2F2F0),
+
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF111111),
+          secondary: Color(0xFFC62828),
+          surface: Colors.white,
+          error: Color(0xFFD32F2F),
+        ),
+
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF111111),
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+
+        cardTheme: CardThemeData(
+          color: const Color(0xFF2A2A2A),
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFC62828),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 14,
+              horizontal: 20,
+            ),
+          ),
+        ),
+
+        floatingActionButtonTheme:
+            const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xFFC62828),
+          foregroundColor: Colors.white,
+        ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFF2F2F0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: Color(0xFF707070),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: Color(0xFFC62828),
+              width: 2,
+            ),
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomeScreenState extends State<HomeScreen> {
+  final Box taskBox = Hive.box('taskBox');
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  String formatDate(DateTime date) {
+    return '${date.month}/${date.day}/${date.year}';
+  }
+
+  Future<void> addTask() async {
+    final titleController = TextEditingController();
+    DateTime selectedDate = DateTime.now();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Row(
+                children: [
+                  Icon(
+                    Icons.add_task,
+                    color: Color(0xFFC62828),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'ADD TASK',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF111111),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Task Title',
+                      prefixIcon: Icon(Icons.task_alt),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(
+                      Icons.calendar_month,
+                      color: Color(0xFFC62828),
+                    ),
+                    title: const Text(
+                      'Task Date',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      formatDate(selectedDate),
+                      style: const TextStyle(
+                        color: Color(0xFF707070),
+                      ),
+                    ),
+                    onTap: () async {
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
+
+                      if (pickedDate != null) {
+                        setDialogState(() {
+                          selectedDate = pickedDate;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'CANCEL',
+                    style: TextStyle(
+                      color: Color(0xFF707070),
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (titleController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Color(0xFFC62828),
+                          content: Text(
+                            'Task title cannot be empty.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    await taskBox.add({
+                      'title': titleController.text.trim(),
+                      'date': selectedDate.toIso8601String(),
+                    });
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('SAVE'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    titleController.dispose();
+  }
+
+  Future<void> editTask(dynamic key, Map task) async {
+    final titleController = TextEditingController(
+      text: task['title'].toString(),
+    );
+
+    DateTime selectedDate =
+        DateTime.tryParse(task['date'].toString()) ??
+            DateTime.now();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Row(
+                children: [
+                  Icon(
+                    Icons.edit,
+                    color: Color(0xFFC62828),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'EDIT TASK',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF111111),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Task Title',
+                      prefixIcon: Icon(Icons.edit),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(
+                      Icons.calendar_month,
+                      color: Color(0xFFC62828),
+                    ),
+                    title: const Text(
+                      'Task Date',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      formatDate(selectedDate),
+                      style: const TextStyle(
+                        color: Color(0xFF707070),
+                      ),
+                    ),
+                    onTap: () async {
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
+
+                      if (pickedDate != null) {
+                        setDialogState(() {
+                          selectedDate = pickedDate;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'CANCEL',
+                    style: TextStyle(
+                      color: Color(0xFF707070),
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (titleController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Color(0xFFC62828),
+                          content: Text(
+                            'Task title cannot be empty.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    await taskBox.put(key, {
+                      'title': titleController.text.trim(),
+                      'date': selectedDate.toIso8601String(),
+                    });
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('UPDATE'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    titleController.dispose();
+  }
+
+  Future<void> deleteTask(dynamic key) async {
+    await taskBox.delete(key);
+  }
+
+  Widget buildHeroSection(int taskCount) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        8,
+      ),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111111),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'TASK Group 12',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'YOUR TASKS',
+                  style: TextStyle(
+                    color: Color(0xFFBDBDBD),
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$taskCount',
+                  style: const TextStyle(
+                    color: Color(0xFFE53935),
+                    fontSize: 42,
+                    fontWeight: FontWeight.bold,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'TOTAL TASKS',
+                  style: TextStyle(
+                    color: Color(0xFFF5C542),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.all(5),
+            width: 75,
+            height: 75,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2A2A2A),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFC62828),
+                width: 2,
+              ),
+            ),
+            child: const Center(
+              child: Text(
+                'Group 12',
+                style: TextStyle(
+                  color: Color(0xFFF5C542),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+        titleSpacing: 18,
+        title: const Row(
+          children: [
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'TASK',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Group 12',
+              style: TextStyle(
+                color: Color(0xFFE53935),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 18),
+            alignment: Alignment.center,
+            child: const Text(
+              'TO-DO',
+              style: TextStyle(
+                fontSize: 12,
+                letterSpacing: 2,
+                color: Color(0xFFF5C542),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+
+      body: ValueListenableBuilder(
+        valueListenable: taskBox.listenable(),
+        builder: (context, Box box, widget) {
+          if (box.isEmpty) {
+            return Column(
+              children: [
+                buildHeroSection(0),
+                const Expanded(
+                  child: EmptyTaskView(),
+                ),
+              ],
+            );
+          }
+
+          return Column(
+            children: [
+              buildHeroSection(box.length),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  12,
+                  20,
+                  12,
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'MY TASKS',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF111111),
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            color: Color(0xFFC62828),
+                            thickness: 3,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Group 12',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFC62828),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(
+                    16,
+                    5,
+                    16,
+                    90,
+                  ),
+                  itemCount: box.length,
+                  itemBuilder: (context, index) {
+                    final key = box.keyAt(index);
+
+                    final task = Map<String, dynamic>.from(
+                      box.get(key),
+                    );
+
+                    final title = task['title'].toString();
+
+                    final date =
+                        DateTime.tryParse(
+                              task['date'].toString(),
+                            ) ??
+                            DateTime.now();
+
+                    return Dismissible(
+                      key: ValueKey(key),
+                      direction: DismissDirection.endToStart,
+
+                      background: Container(
+                        margin: const EdgeInsets.only(
+                          bottom: 14,
+                        ),
+                        padding: const EdgeInsets.only(
+                          right: 20,
+                        ),
+                        alignment: Alignment.centerRight,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFC62828),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      onDismissed: (direction) {
+                        deleteTask(key);
+
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Color(0xFF111111),
+                            content: Text(
+                              'TASK DELETED',
+                            ),
+                          ),
+                        );
+                      },
+
+                      child: Container(
+                        margin: const EdgeInsets.only(
+                          bottom: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2A2A2A),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 4,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 6,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFC62828),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(12),
+                                    bottomLeft: Radius.circular(12),
+
+                                       ),
+                                ),
+                              ),
+
+                              Expanded(
+                                child: ListTile(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+
+                                  leading: Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF111111),
+                                      borderRadius:
+                                          BorderRadius.circular(8),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        'Group 12',
+                                        style: TextStyle(
+                                          color: Color(0xFFF5C542),
+                                          fontWeight:
+                                              FontWeight.bold,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  title: Text(
+                                    title,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 7,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.calendar_today,
+                                          size: 13,
+                                          color: Color(0xFFF5C542),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          formatDate(date),
+                                          style: const TextStyle(
+                                            color:
+                                                Color(0xFFBDBDBD),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          editTask(key, task);
+                                        },
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Color(0xFFF5C542),
+                                          size: 22,
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 32,
+                                        alignment: Alignment.center,
+                                        child: const Icon(
+                                          Icons.arrow_back,
+                                          color: Color(0xFFE53935),
+                                          size: 27,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: addTask,
+        icon: const Icon(Icons.add),
+        label: const Text(
+          'ADD TASK',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyTaskView extends StatelessWidget {
+  const EmptyTaskView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.assignment_outlined,
+            size: 70,
+            color: Color(0xFF707070),
+          ),
+          SizedBox(height: 15),
+          Text(
+            'NO TASKS',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+              color: Color(0xFF111111),
+            ),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'Add a task to get started',
+            style: TextStyle(
+              color: Color(0xFF707070),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
