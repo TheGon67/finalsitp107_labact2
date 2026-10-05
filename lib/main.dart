@@ -72,12 +72,14 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: const Color(0xFFF2F2F0),
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(
               color: Color(0xFF707070),
             ),
           ),
+
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(
@@ -87,6 +89,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+
       home: const HomeScreen(),
     );
   }
@@ -121,13 +124,16 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, setDialogState) {
             return AlertDialog(
               backgroundColor: Colors.white,
+
               title: const Row(
                 children: [
                   Icon(
                     Icons.add_task,
                     color: Color(0xFFC62828),
                   ),
+
                   SizedBox(width: 10),
+
                   Text(
                     'ADD TASK',
                     style: TextStyle(
@@ -137,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -203,22 +210,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     ListTile(
                       contentPadding: EdgeInsets.zero,
+
                       leading: const Icon(
                         Icons.calendar_month,
                         color: Color(0xFFC62828),
                       ),
+
                       title: const Text(
                         'Task Date',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+
                       subtitle: Text(
                         formatDate(selectedDate),
                         style: const TextStyle(
                           color: Color(0xFF707070),
                         ),
                       ),
+
                       onTap: () async {
                         final pickedDate =
                             await showDatePicker(
@@ -238,11 +249,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
+
                   child: const Text(
                     'CANCEL',
                     style: TextStyle(
@@ -250,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+
                 ElevatedButton(
                   onPressed: () async {
                     if (titleController.text.trim().isEmpty) {
@@ -261,6 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
+
                       return;
                     }
 
@@ -285,6 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.pop(context);
                     }
                   },
+
                   child: const Text('SAVE'),
                 ),
               ],
@@ -332,13 +348,16 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, setDialogState) {
             return AlertDialog(
               backgroundColor: Colors.white,
+
               title: const Row(
                 children: [
                   Icon(
                     Icons.edit,
                     color: Color(0xFFC62828),
                   ),
+
                   SizedBox(width: 10),
+
                   Text(
                     'EDIT TASK',
                     style: TextStyle(
@@ -348,6 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -414,22 +434,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     ListTile(
                       contentPadding: EdgeInsets.zero,
+
                       leading: const Icon(
                         Icons.calendar_month,
                         color: Color(0xFFC62828),
                       ),
+
                       title: const Text(
                         'Task Date',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+
                       subtitle: Text(
                         formatDate(selectedDate),
                         style: const TextStyle(
                           color: Color(0xFF707070),
                         ),
                       ),
+
                       onTap: () async {
                         final pickedDate =
                             await showDatePicker(
@@ -449,11 +473,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
+
                   child: const Text(
                     'CANCEL',
                     style: TextStyle(
@@ -461,6 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+
                 ElevatedButton(
                   onPressed: () async {
                     if (titleController.text.trim().isEmpty) {
@@ -472,11 +499,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
+
                       return;
                     }
 
                     await boxTasks.putAt(
                       index,
+
                       Task(
                         title: titleController.text.trim(),
                         description:
@@ -497,6 +526,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.pop(context);
                     }
                   },
+
                   child: const Text('UPDATE'),
                 ),
               ],
@@ -521,16 +551,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildHeroSection(int taskCount) {
     return Container(
       width: double.infinity,
+
       margin: const EdgeInsets.fromLTRB(
         16,
         16,
         16,
         8,
       ),
+
       padding: const EdgeInsets.all(20),
+
       decoration: BoxDecoration(
         color: const Color(0xFF111111),
         borderRadius: BorderRadius.circular(14),
+
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -539,12 +573,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment:
                   CrossAxisAlignment.start,
+
               children: [
                 const Text(
                   'TASK Group 12',
@@ -598,7 +634,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: 75,
             height: 75,
+
             padding: const EdgeInsets.all(5),
+
             decoration: BoxDecoration(
               color: const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(12),
@@ -607,6 +645,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 2,
               ),
             ),
+
             child: const Center(
               child: Text(
                 'Group 12',
@@ -629,6 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 18,
+
         title: const Row(
           children: [
             Text(
@@ -657,6 +697,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             margin: const EdgeInsets.only(right: 18),
             alignment: Alignment.center,
+
             child: const Text(
               'TO-DO',
               style: TextStyle(
@@ -696,6 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               Container(
                 width: double.infinity,
+
                 padding: const EdgeInsets.fromLTRB(
                   20,
                   12,
@@ -768,17 +810,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         margin: const EdgeInsets.only(
                           bottom: 14,
                         ),
+
                         padding:
                             const EdgeInsets.only(
                           right: 20,
                         ),
+
                         alignment:
                             Alignment.centerRight,
+
                         decoration: BoxDecoration(
                           color: const Color(0xFFC62828),
                           borderRadius:
                               BorderRadius.circular(12),
                         ),
+
                         child: const Icon(
                           Icons.delete,
                           color: Colors.white,
@@ -809,6 +855,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: const Color(0xFF2A2A2A),
                           borderRadius:
                               BorderRadius.circular(12),
+
                           boxShadow: const [
                             BoxShadow(
                               color: Colors.black26,
@@ -823,10 +870,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Container(
                                 width: 6,
+
                                 decoration:
                                     const BoxDecoration(
                                   color:
                                       Color(0xFFC62828),
+
                                   borderRadius:
                                       BorderRadius.only(
                                     topLeft:
@@ -854,32 +903,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                         BoxDecoration(
                                       color: const Color(
                                           0xFF111111),
+
                                       borderRadius:
                                           BorderRadius
                                               .circular(8),
                                     ),
 
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        'Group 12',
-                                        style: TextStyle(
-                                          color:
-                                              Color(0xFFF5C542),
+                                        '${index + 1}',
+
+                                        style:
+                                            const TextStyle(
+                                          color: Color(
+                                              0xFFF5C542),
+
                                           fontWeight:
                                               FontWeight.bold,
-                                          fontSize: 14,
+
+                                          fontSize: 22,
                                         ),
-                                        textAlign:
-                                            TextAlign.center,
                                       ),
                                     ),
                                   ),
 
                                   title: Text(
                                     task.title,
+
                                     maxLines: 1,
+
                                     overflow:
                                         TextOverflow.ellipsis,
+
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 17,
@@ -911,6 +966,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           formatDate(
                                             task.date,
                                           ),
+
                                           style:
                                               const TextStyle(
                                             color: Color(
@@ -930,6 +986,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onPressed: () {
                                           editTask(index);
                                         },
+
                                         icon:
                                             const Icon(
                                           Icons.edit,
@@ -965,7 +1022,9 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton:
           FloatingActionButton.extended(
         onPressed: addTask,
+
         icon: const Icon(Icons.add),
+
         label: const Text(
           'ADD TASK',
           style: TextStyle(
